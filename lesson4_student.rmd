@@ -1,0 +1,316 @@
+Lesson 4
+========================================================
+
+***
+
+### Scatterplots and Perceived Audience Size
+Notes:
+
+***
+
+### Scatterplots
+Notes: Tracking two variables at the same time. Also there is a neat fit line
+running down the center, the closer to which point are, the more accurate the 
+guess to the actual number.
+
+```{r Scatterplots}
+library(ggplot2)
+
+pf<- read.csv("pseudo_facebook.tsv", sep='\t')
+
+qplot(x=age, y = friend_count, data=pf)
+
+ggplot(aes(x=age, y=friend_count), data=pf) + 
+  geom_point()
+
+ggsave('scatter.png')
+```
+
+***
+
+#### What are some things that you notice right away?
+Response: The dots appear in vertical lines on the page, this appears to be a facet of the nature of finite vs. continuous ages. There are a lot of lies about being > 100.
+
+***
+
+### ggplot Syntax
+Notes: ggplot allows for more complicated graphs, but consequently relies on more formal and complex syntax.
+
+```{r ggplot Syntax}
+ggplot(aes(x=age, y=friend_count), data=pf) + geom_point() +
+  xlim(13, 90) # users under 13 not permitted on facebook, over 90 not confident truthful
+
+ggsave('ggplot.png')
+
+summary(pf$age) # gives upper and lower bounds for actual ages 
+```
+
+***
+
+### Overplotting
+Notes: Overplotting is the phenomenon where it's difficult to tell what the dots are doing because there are so many concentrated in an area.
+
+```{r Overplotting}
+ggplot(aes(x=age, y=friend_count), data=pf) + 
+  geom_point(alpha=1/20) + #alpha says 'takes 20 points to make one dark point'
+  xlim(13, 90)
+
+ggsave('overplot.png')
+
+plot <- ggplot(aes(x=age, y=friend_count), data=pf) + 
+  geom_jitter(alpha=1/20) + # jitter allows correction for finite ages in this case
+  xlim(13, 90)
+
+ggsave('overplot_jitter.png')
+```
+
+#### What do you notice in the plot?
+Response: Lower scores all around, but primarily you see the lack of weight of the outliers. Younger users have much few friends than originally displayed.
+
+***
+
+### Coord_trans()
+http://docs.ggplot2.org/current/coord_trans.html
+Notes: The difference between transforming the scales and
+ transforming the coordinate system is that scale
+ transformation occurs BEFORE statistics, and coordinate
+ transformation afterwards.  Coordinate transformation also
+ changes the shape of geoms:
+
+```{r Coord_trans()}
+# syntax: coord_trans(y="sqrt")
+```
+
+#### Look up the documentation for coord_trans() and add a layer to the plot that transforms friend_count using the square root function. Create your plot!
+
+```{r}
+plot + ylim(0,5000) + coord_trans(y="sqrt")
+
+# - or - #
+ggplot(aes(x=age, y=friend_count), data=pf) + 
+  geom_point(alpha=1/20, position=position_jitter(h=0)) + #positions will still jitter, but minimum height (h) can be no less than 0
+  xlim(13, 90) +
+  coord_trans(y="sqrt")
+
+ggsave('coord_trans.png')
+```
+
+#### What do you notice?
+Response: The older end of the scale appeared to rise above the x axis, showing maybe fewer friends close to zero, and the younger end appeared to be more in proportion. The skew brought the numbers lower, and made better use of the space. 
+
+***
+
+### Alpha and Jitter
+Notes: Jitter adds noise to points, theoretically pushing values like '0' into the negative, sqrt's of negative numbers are evaluated as imaginary, and unusable for this plot. Geom_point is a better choice, with a modification:
+
+```{r Alpha and Jitter}
+ggplot(aes(x=age, y=friendships_initiated), data=pf) +
+  geom_point(alpha=1/20, position=position_jitter(h=0)) + 
+  xlim(13, 90) +
+  coord_trans(y="sqrt")
+  
+ggsave('fr_init.png')
+summary(pf$age)
+```
+
+***
+
+### Overplotting and Domain Knowledge
+Notes:
+
+***
+
+### Conditional Means
+Notes: 
+install.packages("dplyr")
+
+
+```{r Conditional Means}
+
+```
+
+Create your plot!
+
+```{r Conditional Means Plot}
+
+```
+
+***
+
+### Overlaying Summaries with Raw Data
+Notes:
+
+```{r Overlaying Summaries with Raw Data}
+
+```
+
+#### What are some of your observations of the plot?
+Response:
+
+***
+
+### Moira: Histogram Summary and Scatterplot
+See the Instructor Notes of this video to download Moira's paper on perceived audience size and to see the final plot.
+
+Notes:
+
+***
+
+### Correlation
+Notes:
+
+```{r Correlation}
+
+```
+
+Look up the documentation for the cor.test function.
+
+What's the correlation between age and friend count? Round to three decimal places.
+Response:
+
+***
+
+### Correlation on Subsets
+Notes:
+
+```{r Correlation on Subsets}
+with(                 , cor.test(age, friend_count))
+```
+
+***
+
+### Correlation Methods
+Notes:
+
+***
+
+## Create Scatterplots
+Notes:
+
+```{r}
+
+```
+
+***
+
+### Strong Correlations
+Notes:
+
+```{r Strong Correlations}
+
+```
+
+What's the correlation betwen the two variables? Include the top 5% of values for the variable in the calculation and round to 3 decimal places.
+
+```{r Correlation Calcuation}
+
+```
+
+Response:
+
+***
+
+### Moira on Correlation
+Notes:
+
+***
+
+### More Caution with Correlation
+Notes:
+
+```{r More Caution With Correlation}
+install.packages('alr3')
+library(alr3)
+```
+
+Create your plot!
+
+```{r Temp vs Month}
+
+```
+
+***
+
+### Noisy Scatterplots
+a. Take a guess for the correlation coefficient for the scatterplot.
+
+b. What is the actual correlation of the two variables?
+(Round to the thousandths place)
+
+```{r Noisy Scatterplots}
+
+```
+
+***
+
+### Making Sense of Data
+Notes:
+
+```{r Making Sense of Data}
+
+```
+
+***
+
+### A New Perspective
+
+What do you notice?
+Response:
+
+Watch the solution video and check out the Instructor Notes!
+Notes:
+
+***
+
+### Understanding Noise: Age to Age Months
+Notes:
+
+```{r Understanding Noise: Age to Age Months}
+
+```
+
+***
+
+### Age with Months Means
+
+```{r Age with Months Means}
+
+```
+
+Programming Assignment
+```{r Programming Assignment}
+
+```
+
+***
+
+### Noise in Conditional Means
+
+```{r Noise in Conditional Means}
+
+```
+
+***
+
+### Smoothing Conditional Means
+Notes:
+
+```{r Smoothing Conditional Means}
+
+```
+
+***
+
+### Which Plot to Choose?
+Notes:
+
+***
+
+### Analyzing Two Variables
+Reflection:
+
+***
+
+Click **KnitHTML** to see all of your hard work and to have an html
+page of this lesson, your answers, and your notes!
+
