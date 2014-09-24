@@ -1,0 +1,104 @@
+---
+title: "Lesson4 ProblemSet"
+output: html_document
+---
+# Problemset
+
+## Setting up the Environment
+```{r}
+library('ggplot2')
+data(diamonds)
+summary(diamonds)
+```
+
+## Assignment 1: Plotting a scatterplot of price vs. 'x'
+
+```{r, echo=FALSE}
+ggplot(aes(x=x, y=price), data=diamonds) +
+  geom_point(color='orange', alpha=.05) +
+  coord_trans(y='sqrt') +
+  scale_x_discret(breaks = seq(2.5, 10, .5)) +
+  xlab('X')
+
+```
+
+## Assignment 2: Correlations
+```{r}
+with(diamonds, cor(x, price))
+with(diamonds, cor(y, price))
+with(diamonds, cor(z, price))
+```
+
+## Assignment 3: Scatterplot of price vs. depth
+```{r}
+ggplot(aes(x=depth, y=price), data=diamonds) +
+  geom_point(color='orange', alpha=.01) +
+  scale_x_continuous(breaks = seq(50, 80, 2))
+```
+
+## Assignment 4: Correlation
+```{r}
+with(diamonds, cor(depth, price))
+```
+
+## Assignment 5: Scatterplot of price vs. carat (ommiting top 1% prices and carats)
+```{r}
+d2 <- subset(diamonds, quantile(price, .99) & quantile(carat, .99))
+ggplot(aes(x=carat, y=price), data=d2) +
+  geom_point(color='orange')
+```
+
+## Assignment 6: Scatterplot of price vs. volume (rough estimate of x*y*z)
+```{r}
+diamonds$volume <- diamonds$x*diamonds$y*diamonds$z
+
+ggplot(aes(x=volume, y=price), data=diamonds) +
+  geom_point()
+
+library(plyr)
+count(diamonds$volume == 0)
+detach('package:plyr', unload=TRUE)
+with(subset(diamonds, diamonds$volume != 0 & diamonds$volume <= 800), cor(volume, price))
+diamonds.exclusions <- subset(diamonds, diamonds$volume != 0 & diamonds$volume <= 800)
+```
+
+```{r}
+ggplot(aes(x=volume, y=price), data=diamonds.exclusions) +
+  geom_point(color='orange', alpha=.05) +
+  geom_smooth(method='lm')
+```
+
+## Assignment 7: Reforming data, plotting clarity and price
+```{r}
+library(dplyr)
+diamondsByClarity <- diamonds %.%
+  group_by(clarity) %.%
+  summarize(
+    mean_price = mean(price),
+    median_price = median(price),
+    min_price = min(price),
+    max_price = max(price),
+    n = n()) %.%
+  arrange(clarity)
+
+```
+
+## Assignment 8: Mean price by color vs. mean price by clarity
+```{r}
+library(ggplot2)
+diamonds_by_clarity <- group_by(diamonds, clarity)
+diamonds_mp_by_clarity <- summarise(diamonds_by_clarity, mean_price = mean(price))
+diamonds_mp_by_clarity.ordered <- summarise(data.frame(factor(diamonds_by_clarity, levels = c("IF", "VVS1", "VVS2", "VS1", "VS2", "SI1", "SI2", "I1"))), mean_price = mean(price))
+
+diamonds_by_color <- group_by(diamonds, color)
+diamonds_mp_by_color <- summarise(diamonds_by_color, mean_price = mean(price))
+
+p1 <- ggplot(aes(x=clarity, y=mean_price), data=diamonds_mp_by_clarity.ordered) +
+  geom_bar(stat="identity")
+
+p2 <- ggplot(aes(x=color, y=mean_price), data=diamonds_mp_by_color) +
+  geom_bar(stat="identity")
+
+library(gridExtra)
+grid.arrange(p1, p2, ncol=1)
+```
