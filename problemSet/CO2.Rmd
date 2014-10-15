@@ -1,0 +1,70 @@
+---
+title: "CO2_Emission"
+author: "Chadwick Puterbaugh"
+date: "10/06/2014"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(reshape)
+library(data.table)
+setwd('Documents/class//udacity/exploratoryDataAnalysis//lesson4/problemSet/')
+test2<- read.csv('indicator CDIAC carbon_dioxide_emissions_per_capita.csv', header=TRUE, na.strings="NA", row.names=1, blank.lines.skip=TRUE)
+test2<-data.frame(t(test2))
+
+
+data<-data.frame(year=c(1950:2011), test2[c(189:250),])
+melted<-melt(data, id="year", variable_name="country" )
+melted<-subset(melted, value!="NA")
+
+us<-subset(melted, country=="United.States")
+non.us<-subset(melted, country!="United.States")
+
+melted.stats <- melted %.%
+  group_by(year) %.%
+  summarize(median = median(value),
+            mean = mean(value),
+            loquart = quantile(value, probs=.25),
+            hiquart = quantile(value, probs=.75)) 
+
+
+ggplot(data=melted.stats, aes(year, median)) +
+  geom_errorbar(aes(ymin=loquart, ymax=hiquart, width=.4, color='blue')) +
+  stat_summary(fun.y=median, geom='point', shape=5, size=3, color='blue') +
+  geom_line(aes(year, value), data=us) +
+  ylab("Tons") + xlab("Year") +
+  ggtitle("World Coal Production Per Year")
+
+base <- ggplot(subset(melted, country %in% 
+                     c("United.States", "United.Kingdom", "Russia", "Netherlands", "China", "India", "Brazil"))) 
+
+base + aes(x=country, y=value, fill=country) +
+  geom_boxplot() + stat_summary(geom="point", fun.y=mean, shape=5)
+  
+
+base + aes(x=year, y=value, color=country) +
+  geom_line() + ylab("Tons") + xlab("Year") + ggtitle("World CO2 Emissions")
+
+
+
+
+
+
+
+
+
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

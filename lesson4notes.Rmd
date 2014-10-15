@@ -1,0 +1,12 @@
+Lesson 4
+==================================================
+
+## Scatter Plots
+```{r}
+getwd()
+### setwd()
+
+library(ggplot2)
+
+pf<- read.csv("pseudo_facebook.tsv", sep='\t')
+```
