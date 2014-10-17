@@ -50,7 +50,7 @@ base + aes(x=country, y=value, fill=country) +
 base + aes(x=year, y=value, color=country) +
   geom_line() + ylab("Tons") + xlab("Year") + ggtitle("World CO2 Emissions")
 
-
+ggsave('cs2emm.png')
 
 
 
