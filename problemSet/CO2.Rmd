@@ -13,13 +13,12 @@ When you click the **Knit** button a document will be generated that includes bo
 library(ggplot2)
 library(dplyr)
 library(reshape)
-library(data.table)
 setwd('Documents/class//udacity/exploratoryDataAnalysis//lesson4/problemSet/')
 test2<- read.csv('indicator CDIAC carbon_dioxide_emissions_per_capita.csv', header=TRUE, na.strings="NA", row.names=1, blank.lines.skip=TRUE)
-test2<-data.frame(t(test2))
+emmissions<-data.frame(t(test2))
 
 
-data<-data.frame(year=c(1950:2011), test2[c(189:250),])
+data<-data.frame(year=c(1950:2011), emmissions[c(189:250),])
 melted<-melt(data, id="year", variable_name="country" )
 melted<-subset(melted, value!="NA")
 
@@ -39,7 +38,7 @@ ggplot(data=melted.stats, aes(year, median)) +
   stat_summary(fun.y=median, geom='point', shape=5, size=3, color='blue') +
   geom_line(aes(year, value), data=us) +
   ylab("Tons") + xlab("Year") +
-  ggtitle("World Coal Production Per Year")
+  ggtitle("World CO2 Emmssions")
 
 base <- ggplot(subset(melted, country %in% 
                      c("United.States", "United.Kingdom", "Russia", "Netherlands", "China", "India", "Brazil"))) 
